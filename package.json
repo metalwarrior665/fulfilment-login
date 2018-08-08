@@ -1,6 +1,6 @@
 {
   "name": "fulfilment-gem-login",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Login and anticaptcha function for login into fulfilemt.gem.gov.in",
   "main": "main.js",
   "scripts": {
