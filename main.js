@@ -32,7 +32,6 @@ const login = async ({browser,username,password, maxRetries})  => {
     console.log('we are on the login page')
 
     await page.waitFor(1000)
-    await saveScreen(page, 'before-login')
     console.log('captcha base64 length',captchaImage.length);
     await page.type('input[id="loginid"]', username, { delay: 100 });
     await page.type('input[id="password"]', password, { delay: 100 });
