@@ -37,13 +37,19 @@ const login = async ({browser,username,password, maxRetries, anticaptchaKey})  =
     }
     await page.type('input[id="captcha_math"]', result.solution.text.toUpperCase(), { delay: 100 });
     
-    await page.click('button[type="submit"]');
+    await Promise.all([
+        page.click('button[type="submit"]'),
+        page.waitForNavigation(),
+        page.waitForSelector('#menu_orders')
+    ]).catch(e=>console.log(`navigation and waiting after click failed`))
     
     await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'#menu_orders', maxRetries })
 
+    console.log('WE ARE LOGGED IN!')
+
     await gotoRetried({page, url:'https://admin-mkp.gem.gov.in', selector:'#catalog_index', maxRetries })
 
-    console.log('WE ARE LOGGED IN!')
+    console.log('we are on admin')
     
     const cookies = await page.cookies();
     await page.close()
@@ -59,7 +65,7 @@ async function gotoRetried({page, url, selector, maxRetries}) {
     while(!isElement && retries < maxRetries){
         await page.goto(url)
             .then(()=>selector? page.waitForSelector(selector) : true)
-            .catch(()=>console.log(`loading page didnt load on try number ${retries+1}`))
+            .catch(()=>console.log(`${url} didnt load on try number ${retries+1}`))
         await page.waitFor(1000)
         isElement = selector ? await page.$(selector) : true
         retries++
