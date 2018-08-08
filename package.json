@@ -1,0 +1,11 @@
+{
+  "name": "fulfilment-gem-login",
+  "version": "1.0.0",
+  "description": "Login and anticaptcha function for login into fulfilemt.gem.gov.in",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lukas Krivka",
+  "license": "ISC"
+}
