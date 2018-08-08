@@ -1,3 +1,5 @@
+const requestPromise = require('request-promise')
+
 const login = async ({browser,username,password, maxRetries, anticaptchaKey})  => {
     var page = await browser.newPage();
     await page.setViewport({width: 1535, height: 750})
