@@ -14,11 +14,6 @@ const login = async ({browser,username,password, maxRetries, anticaptchaKey})  =
     
     await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'button[type="submit"]', maxRetries })
 
-    if(!selector) {
-        console.log(`WE ARE UNABLE TO LOAD THE LOGIN PAGE ON ${retries} TRIES, EXITING THE ACT`)
-        process.exit()
-    }
-
     console.log('we are on the login page')
 
     await page.waitFor(1000)
@@ -44,18 +39,13 @@ const login = async ({browser,username,password, maxRetries, anticaptchaKey})  =
     
     await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'#menu_orders', maxRetries })
 
-    if(!selectorAfter) {
-        console.log(`WE ARE UNABLE TO LOAD THE AFTER-LOGIN PAGE ON ${retriesAfter} TRIES, EXITING THE ACT`)
-        process.exit()
-    }
-
     await gotoRetried({page, url:'https://admin-mkp.gem.gov.in', selector:'#catalog_index', maxRetries })
 
     console.log('WE ARE LOGGED IN!')
     
     const cookies = await page.cookies();
     await page.close()
-    return {cookies}
+    return cookies
 }
 
 module.exports = login
