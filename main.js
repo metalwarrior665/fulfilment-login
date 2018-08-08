@@ -1,6 +1,6 @@
-const login = async ({browser,username,password, maxRetries})  => {
+const login = async ({browser,username,password, maxRetries, anticaptchaKey})  => {
     var page = await browser.newPage();
-    
+    await page.setViewport({width: 1535, height: 750})
     var captchaImage = '';
 
     page.on('response', async (response) => {
@@ -12,17 +12,7 @@ const login = async ({browser,username,password, maxRetries})  => {
         }
     });
     
-    let retries = 1
-    let selector
-
-    while(!selector && retries < maxRetries){
-        await page.goto('https://fulfilment.gem.gov.in/fulfilment')
-            .then(()=>page.waitForSelector('button[type="submit"]'))
-            .catch(()=>console.log(`loading page didnt load on try number ${retries+1}`))
-        await page.waitFor(1000)
-        selector = await page.$('button[type="submit"]')
-        retries++
-    }
+    await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'button[type="submit"]', maxRetries })
 
     if(!selector) {
         console.log(`WE ARE UNABLE TO LOAD THE LOGIN PAGE ON ${retries} TRIES, EXITING THE ACT`)
@@ -37,7 +27,7 @@ const login = async ({browser,username,password, maxRetries})  => {
     await page.type('input[id="password"]', password, { delay: 100 });
     
     //Anticaptcha key here
-    const anticaptcha = new Anticaptcha('bd64703c6c5c2b6e4882578f7f700133');
+    const anticaptcha = new Anticaptcha(anticaptchaKey);
     const task = {
         type: "ImageToTextTask",
         body: captchaImage,
@@ -52,23 +42,14 @@ const login = async ({browser,username,password, maxRetries})  => {
     
     await page.click('button[type="submit"]');
     
-    let selectorAfter
-    let retriesAfter = 1
-    while(!selectorAfter && retriesAfter < maxRetries){
-        if(retriesAfter === 1) await page.waitForSelector('#menu_orders').catch(e=>console.log(`after login page didnt load on try number ${retriesAfter+1}`))
-        else{
-            await page.goto('https://fulfilment.gem.gov.in/fulfilment')
-                .then(()=>page.waitForSelector('#menu_orders'))    
-                .catch(e=>console.log(`after login page didnt load on try number ${retriesAfter+1}`))
-        }
-        selectorAfter = await page.$('#menu_orders');
-        retriesAfter++
-    }
+    await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'#menu_orders', maxRetries })
 
     if(!selectorAfter) {
         console.log(`WE ARE UNABLE TO LOAD THE AFTER-LOGIN PAGE ON ${retriesAfter} TRIES, EXITING THE ACT`)
         process.exit()
     }
+
+    await gotoRetried({page, url:'https://admin-mkp.gem.gov.in', selector:'#catalog_index', maxRetries })
 
     console.log('WE ARE LOGGED IN!')
     
@@ -78,6 +59,25 @@ const login = async ({browser,username,password, maxRetries})  => {
 }
 
 module.exports = login
+
+async function gotoRetried({page, url, selector, maxRetries}) {
+    let retries = 0
+    let isElement
+
+    while(!isElement && retries < maxRetries){
+        await page.goto(url)
+            .then(()=>selector? page.waitForSelector(selector) : true)
+            .catch(()=>console.log(`loading page didnt load on try number ${retries+1}`))
+        await page.waitFor(1000)
+        isElement = selector ? await page.$(selector) : true
+        retries++
+    }
+    if(!isElement) {
+        console.log(`WE ARE UNABLE TO LOAD THE LOGIN PAGE ON ${retries} TRIES`)
+        return false
+    }
+    return true
+}
 
 class Anticaptcha {
     
