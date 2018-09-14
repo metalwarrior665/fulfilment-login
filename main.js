@@ -1,5 +1,14 @@
 const requestPromise = require('request-promise')
 
+const saveScreen = async (page, key, doHtml) => {
+    const screenshotBuffer = await page.screenshot({fullPage: true});
+    await Apify.setValue(key, screenshotBuffer, { contentType: 'image/png' });
+    if(doHtml){
+        const html = await page.evaluate('document.documentElement.outerHTML');
+        await Apify.setValue(key+'.html', html, { contentType: 'text/html' });
+    }
+};
+
 const login = async ({browser,username,password, maxRetries, anticaptchaKey})  => {
     var page = await browser.newPage();
     await page.setViewport({width: 1535, height: 750})
@@ -56,7 +65,7 @@ const login = async ({browser,username,password, maxRetries, anticaptchaKey})  =
     return cookies
 }
 
-module.exports = {login, gotoRetried}
+module.exports = {login, gotoRetried, saveScreen}
 
 async function gotoRetried({page, url, selector, maxRetries}) {
     let retries = 0
