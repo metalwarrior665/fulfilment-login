@@ -56,7 +56,7 @@ const login = async ({browser,username,password, maxRetries, anticaptchaKey})  =
     return cookies
 }
 
-module.exports = login
+module.exports = {login, gotoRetried}
 
 async function gotoRetried({page, url, selector, maxRetries}) {
     let retries = 0
@@ -66,12 +66,11 @@ async function gotoRetried({page, url, selector, maxRetries}) {
         await page.goto(url)
             .then(()=>selector? page.waitForSelector(selector) : true)
             .catch(()=>console.log(`${url} didnt load on try number ${retries+1}`))
-        await page.waitFor(1000)
         isElement = selector ? await page.$(selector) : true
         retries++
     }
     if(!isElement) {
-        console.log(`WE ARE UNABLE TO LOAD THE LOGIN PAGE ON ${retries} TRIES`)
+        console.log(`WE ARE UNABLE TO LOAD THE ${url} PAGE ON ${retries} TRIES, GIVING UP`)
         return false
     }
     return true
