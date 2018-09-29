@@ -52,8 +52,8 @@ const login = async ({browser,username,password, maxRetries, anticaptchaKey})  =
         page.waitForSelector('#menu_orders')
     ]).catch(e=>console.log(`navigation and waiting after click failed`))
     
-    await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'#menu_orders', maxRetries })
-
+    //await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'#menu_orders', maxRetries })
+    await page.waitFor(5000)
     console.log('WE ARE LOGGED IN!')
 
     await gotoRetried({page, url:'https://admin-mkp.gem.gov.in', selector:'#catalog_index', maxRetries })
