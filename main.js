@@ -75,7 +75,7 @@ async function gotoRetried({page, url, selector, maxRetries}) {
         await page.goto(url)
             .then(()=>selector? page.waitForSelector(selector) : true)
             .catch(()=>console.log(`${url} didnt load on try number ${retries+1}`))
-        isElement = selector ? await page.$(selector) : true
+        isElement = selector ? await page.$(selector).catch(()=>{}) : true
         retries++
     }
     if(!isElement) {
