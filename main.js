@@ -9,7 +9,7 @@ const saveScreen = async (page, key, doHtml) => {
     }
 };
 
-const login = async ({browser,username,password, maxRetries, anticaptchaKey})  => {
+const login = async ({ browser, username, password, maxRetries = 5, anticaptchaKey})  => {
     var page = await browser.newPage();
     await page.setViewport({width: 1535, height: 750})
     var captchaImage = '';
