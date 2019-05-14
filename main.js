@@ -9,7 +9,7 @@ const saveScreen = async (page, key, doHtml) => {
     }
 };
 
-const login = async ({ browser, username, password, maxRetries = 5, anticaptchaKey})  => {
+const login = async ({ browser, username, password, maxRetries = 5, anticaptchaKey, test = false })  => {
     var page = await browser.newPage();
     await page.setViewport({width: 1535, height: 750})
     var captchaImage = '';
@@ -24,6 +24,10 @@ const login = async ({ browser, username, password, maxRetries = 5, anticaptchaK
     });
     
     await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'button[type="submit"]', maxRetries })
+
+    if (test) {
+        await saveScreen(page, 'login-start', true)
+    }
 
     console.log('we are on the login page')
 
