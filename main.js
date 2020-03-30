@@ -34,7 +34,6 @@ const login = async ({ browser, username, password, maxRetries = 5, anticaptchaK
     await page.waitFor(1000)
     console.log('captcha base64 length',captchaImage.length);
     await page.type('input[id="loginid"]', username, { delay: 100 });
-    await page.type('input[id="password"]', password, { delay: 100 });
     
     //Anticaptcha key here
     const anticaptcha = new Anticaptcha(anticaptchaKey);
@@ -49,12 +48,21 @@ const login = async ({ browser, username, password, maxRetries = 5, anticaptchaK
         return;
     }
     await page.type('input[id="captcha_math"]', result.solution.text.toUpperCase(), { delay: 100 });
+
+    // Password only appears after catpcha
+    await Promise.all([
+        page.click('button[type="submit"]'),
+        page.waitForNavigation(),
+        page.waitForSelector('input[id="password"]')
+    ]).catch(e=>console.log(`Navigation and waiting after click failed after filling captcha`))
+
+    await page.type('input[id="password"]', password, { delay: 100 });
     
     await Promise.all([
         page.click('button[type="submit"]'),
         page.waitForNavigation(),
         page.waitForSelector('#menu_orders')
-    ]).catch(e=>console.log(`navigation and waiting after click failed`))
+    ]).catch(e=>console.log(`navigation and waiting after click failed after filling password`))
     
     //await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'#menu_orders', maxRetries })
     await page.waitFor(5000)
