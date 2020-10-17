@@ -23,7 +23,8 @@ const login = async ({ browser, username, password, maxRetries = 5, anticaptchaK
         }
     });
     
-    await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'button[type="submit"]', maxRetries })
+  //  await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'button[type="submit"]', maxRetries })
+        await gotoRetried({page, url:'http://admin-mkp.gem.gov.in', selector:'button[type="submit"]', maxRetries })
 
     if (test) {
         await saveScreen(page, 'login-start', true)
@@ -61,7 +62,10 @@ const login = async ({ browser, username, password, maxRetries = 5, anticaptchaK
     await Promise.all([
         page.click('button[type="submit"]'),
         page.waitForNavigation(),
-        page.waitForSelector('#menu_orders')
+//         page.waitForSelector('#menu_orders')
+                page.waitForSelector('#actions')
+
+        
     ]).catch(e=>console.log(`navigation and waiting after click failed after filling password`))
     
     //await gotoRetried({page, url:'https://fulfilment.gem.gov.in/fulfilment', selector:'#menu_orders', maxRetries })
